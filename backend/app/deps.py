@@ -17,13 +17,26 @@ def get_current_user(
 ) -> User:
     if not creds or creds.scheme.lower() != "bearer":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    from jose.exceptions import ExpiredSignatureError
+
     from app.core.security import decode_access_token
 
     try:
         payload = decode_access_token(creds.credentials)
-        uid = uuid.UUID(payload["sub"])
+        sub = payload.get("sub")
+        if not sub:
+            raise ValueError("missing sub")
+        uid = uuid.UUID(str(sub))
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Сессия истекла. Войдите снова.",
+        ) from None
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Недействительный токен. Войдите снова.",
+        ) from None
     user = db.get(User, uid)
     if not user or not user.is_active:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")

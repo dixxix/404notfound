@@ -26,7 +26,7 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql+psycopg2://psy:psy@postgres:5432/psytests
-      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-}
       APP_BASE_URL: http://localhost:3000
       CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000

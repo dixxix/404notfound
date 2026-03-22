@@ -5,7 +5,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = "postgresql+psycopg2://psy:psy@localhost:5432/psytests"
-    jwt_secret: str = "change-me-in-production"
+    # Совпадает с JWT_SECRET у Next.js (lib/server/auth.ts) и docker-compose — иначе «Invalid token» при сохранении.
+    jwt_secret: str = "dev-secret-change-in-production"
     jwt_refresh_secret: str | None = None
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 7

@@ -12,7 +12,8 @@ function getSecret(): Uint8Array {
 }
 
 function getRefreshSecret(): Uint8Array {
-  const s = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'dev-refresh-secret'
+  // Без отдельного JWT_REFRESH_SECRET используем тот же секрет, что и FastAPI (refresh подписан тем же ключом, что и access, если refresh_secret не задан).
+  const s = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'dev-secret-change-in-production'
   return new TextEncoder().encode(s)
 }
 

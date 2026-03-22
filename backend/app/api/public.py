@@ -22,7 +22,7 @@ def _get_link(db: Session, token: str) -> TestLink | None:
 
 
 def _get_test_by_slug(db: Session, slug: str) -> Test | None:
-    """Сначала public_slug (URL /client/{slug}), затем токен публичной ссылки (как /test/{token})."""
+    """public_slug для /client/{slug}, затем токен ссылки — как /test/{token} (главная «демо»)."""
     t = db.scalars(select(Test).where(Test.public_slug == slug)).first()
     if t:
         return t
