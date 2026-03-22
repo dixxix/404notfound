@@ -76,7 +76,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-[55] bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       {/* Mobile sidebar */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-72 bg-card border-r transform transition-transform duration-300 ease-in-out lg:hidden',
+          'fixed inset-y-0 left-0 z-[60] w-72 bg-card border-r transform transition-transform duration-300 ease-in-out lg:hidden',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -121,7 +121,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-card border-r px-6 pb-4">
           <div className="flex h-16 shrink-0 items-center">
             <Link href="/admin" className="flex items-center gap-2">

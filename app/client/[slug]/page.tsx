@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -16,12 +16,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { api } from '@/lib/api'
 import type { PublicTest } from '@/lib/types'
 
-const schema = z.object({
-  name: z.string().min(3, 'Введите имя'),
-  email: z.string().email('Введите корректный email').optional().or(z.literal('')),
-})
-
-type Values = z.infer<typeof schema>
+type Values = { name: string; email: string }
 
 export default function ClientIntroPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -29,10 +24,29 @@ export default function ClientIntroPage() {
   const [test, setTest] = useState<PublicTest | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<Values>({
-    resolver: zodResolver(schema),
+  const formSchema = useMemo(() => {
+    const needPersonal = test?.requiresPersonalData !== false
+    return z.object({
+      name: needPersonal
+        ? z
+            .string()
+            .min(3, 'Введите имя')
+            .refine((s) => s.trim().split(/\s+/).filter(Boolean).length >= 2, {
+              message: 'Введите имя и фамилию (как требует сервер)',
+            })
+        : z.string().optional(),
+      email: z.string().email('Введите корректный email').optional().or(z.literal('')),
+    })
+  }, [test?.requiresPersonalData])
+
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<Values>({
+    resolver: zodResolver(formSchema),
     defaultValues: { name: '', email: '' },
   })
+
+  useEffect(() => {
+    reset({ name: '', email: '' })
+  }, [formSchema, reset])
 
   useEffect(() => {
     api.getPublicTestBySlug(slug)
@@ -44,7 +58,7 @@ export default function ClientIntroPage() {
     setIsLoading(true)
     try {
       const { attemptId } = await api.startTestBySlug(slug, {
-        name: values.name,
+        name: values.name?.trim() || undefined,
         email: values.email || undefined,
       })
       sessionStorage.setItem(`client-attempt-${slug}`, attemptId)
@@ -96,7 +110,7 @@ export default function ClientIntroPage() {
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
                 <Input 
-                  placeholder="Введите имя"
+                  placeholder="Иван Иванов"
                   className="h-12 rounded-xl bg-muted border-border focus:border-primary pl-12 text-foreground"
                   {...register('name')} 
                 />

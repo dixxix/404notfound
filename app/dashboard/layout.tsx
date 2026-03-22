@@ -84,15 +84,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-[55] bg-foreground/20 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Mobile sidebar */}
+      {/* Mobile sidebar — z выше main (z-10), иначе клики не доходят до ссылок */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-72 bg-card/95 backdrop-blur-2xl border-r border-border transform transition-transform duration-300 ease-in-out lg:hidden shadow-2xl',
+          'fixed inset-y-0 left-0 z-[60] w-72 bg-card/95 backdrop-blur-2xl border-r border-border transform transition-transform duration-300 ease-in-out lg:hidden shadow-2xl',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -137,8 +137,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </nav>
       </div>
 
-      {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col">
+      {/* Desktop sidebar — выше main (z-10), иначе область слева перехватывает клики */}
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-card/70 backdrop-blur-2xl border-r border-border px-6 pb-4">
           <div className="flex h-20 shrink-0 items-center">
             <Link href="/dashboard" className="flex items-center gap-3">
